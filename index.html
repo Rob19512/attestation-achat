@@ -347,8 +347,7 @@
 
     /* ── Hidden attestation template ── */
     #attestation-tpl {
-      position: absolute;
-      left: -9999px; top: 0;
+      display: none;
       width: 794px;
       background: #fff;
       font-family: Arial, sans-serif;
@@ -356,6 +355,14 @@
       line-height: 1.6;
       color: #222;
       padding: 48px 56px 60px;
+    }
+    #attestation-tpl.rendering {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -9999;
     }
     #attestation-tpl .d-co   { font-weight: bold; font-size: 13px; }
     #attestation-tpl .d-title { text-align: center; font-size: 22px; font-weight: bold; margin: 18px 0 4px; }
@@ -789,23 +796,27 @@
 
     const filename = `Attestation-${invNum}-${v('seller-name').replace(/\s+/g, '_')}.pdf`;
 
+    tpl.classList.add('rendering');
+
     try {
       await html2pdf()
         .set({
           margin:      [15, 15, 15, 15],
           filename,
           image:       { type: 'jpeg', quality: 0.97 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
           jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
           pagebreak:   { mode: 'avoid-all' },
         })
         .from(tpl)
         .save();
 
-      tpl.innerHTML = '';
       setMsg(`Attestation n° ${invNum} générée et téléchargée avec succès.`, 'success', 'M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4 12 14.01l-3-3');
     } catch (e) {
       setMsg('Erreur lors de la création du PDF : ' + e.message, 'error', 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01');
+    } finally {
+      tpl.classList.remove('rendering');
+      tpl.innerHTML = '';
     }
 
     btn.disabled = false;
