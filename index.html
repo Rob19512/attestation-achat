@@ -468,8 +468,8 @@
       (payMethod === 'paypal'   ? on : off) + ' PayPal   ' +
       (payMethod === 'autre'    ? on : off) + ' Autre';
 
-    const S  = 8.5;
-    const SH = 9.5;
+    const S  = 10;
+    const SH = 11;
 
     function rule(color) {
       return { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 0.35, lineColor: color }], margin: [0, 1, 0, 2] };
@@ -488,7 +488,7 @@
     content.push({
       columns: [
         { text: 'RBS 4YOU', bold: true, fontSize: 10, width: 'auto' },
-        { text: "Attestation d'Achat  |  N " + invNum, fontSize: 14, bold: true, alignment: 'center' },
+        { text: "Attestation d'Achat  |  N " + invNum, fontSize: 16, bold: true, alignment: 'center' },
         { text: '', width: 50 },
       ],
       margin: [0, 0, 0, 3],
@@ -506,7 +506,7 @@
             { text: 'Nom : ' + v('seller-name'), fontSize: S },
             { text: 'Adresse : ' + v('seller-address'), fontSize: S },
             { text: 'Tel : ' + v('seller-phone'), fontSize: S },
-            { text: '(Ci-apres le Vendeur)', italics: true, color: '#c0392b', fontSize: 7.5, margin: [0, 1, 0, 0] },
+            { text: '(Ci-apres le Vendeur)', italics: true, color: '#c0392b', fontSize: 9, margin: [0, 1, 0, 0] },
           ],
         },
         {
@@ -514,7 +514,7 @@
           alignment: 'right',
           stack: [
             { text: 'RBS 4YOU, SASU — capital 1 000,00 EUR\nSiege : 60 rue Francois 1er, 75008 Paris\nRCS Paris — SIREN 101 776 276\nRepresentee par Robin Fraitot, President', fontSize: S, alignment: 'right' },
-            { text: "(Ci-apres l'Acquereur)", italics: true, color: '#c0392b', fontSize: 7.5, alignment: 'right', margin: [0, 1, 0, 0] },
+            { text: "(Ci-apres l'Acquereur)", italics: true, color: '#c0392b', fontSize: 9, alignment: 'right', margin: [0, 1, 0, 0] },
           ],
         },
       ],
@@ -553,9 +553,9 @@
 
     return {
       pageSize: 'A4',
-      pageMargins: [28, 22, 28, 22],
+      pageMargins: [32, 26, 32, 26],
       content,
-      defaultStyle: { font: 'Roboto', fontSize: S, lineHeight: 1.2 },
+      defaultStyle: { font: 'Roboto', fontSize: S, lineHeight: 1.25 },
     };
   }
 
