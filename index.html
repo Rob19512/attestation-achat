@@ -457,7 +457,7 @@
     return null;
   }
 
-  // ── Generation PDF (PDFMake — 1 page) ────────────────────────────
+  // ── Generation PDF (PDFMake — 1 page garantie) ───────────────────
   function buildDocDef(invNum, sigDataUrl) {
     const payMethod = document.querySelector('input[name="pay"]:checked').value;
     const payDetail = v('pay-detail');
@@ -468,75 +468,94 @@
       (payMethod === 'paypal'   ? on : off) + ' PayPal   ' +
       (payMethod === 'autre'    ? on : off) + ' Autre';
 
-    // Constantes de mise en page serrees pour tenir sur 1 page
-    const S  = 9;     // taille corps
-    const SH = 10;    // taille titres section
-    const G  = 2;     // espacement standard (pt)
+    const S  = 8.5;
+    const SH = 9.5;
 
     function rule(color) {
-      return { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.4, lineColor: color }], margin: [0, 0, 0, G] };
+      return { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 0.35, lineColor: color }], margin: [0, 1, 0, 2] };
+    }
+
+    function sec(title) {
+      return [
+        { text: title, bold: true, fontSize: SH, margin: [0, 4, 0, 0] },
+        rule('#333333'),
+      ];
     }
 
     const content = [];
 
-    // En-tete
-    content.push({ text: 'RBS 4YOU', bold: true, fontSize: 11, margin: [0, 0, 0, 2] });
-    content.push({ text: "Attestation d'Achat", fontSize: 17, bold: true, alignment: 'center', margin: [0, 0, 0, 2] });
-    content.push({ text: 'N ' + invNum, fontSize: 9, color: '#666666', alignment: 'center', margin: [0, 0, 0, 5] });
-    content.push(rule('#bbbbbb'));
-
-    // Parties
-    content.push({ text: 'Entre les soussignes :', bold: true, fontSize: S, margin: [0, 1, 0, G] });
-    content.push({ text: 'Le Vendeur (Particulier)', bold: true, fontSize: S, margin: [0, 0, 0, 1] });
-    content.push({ text: 'Nom et prenom : ' + v('seller-name'),   fontSize: S, margin: [0, 0, 0, 1] });
-    content.push({ text: 'Adresse : '       + v('seller-address'), fontSize: S, margin: [0, 0, 0, 1] });
-    content.push({ text: 'Telephone : '     + v('seller-phone'),  fontSize: S, margin: [0, 0, 0, 1] });
-    content.push({ text: '(Ci-apres le Vendeur)', italics: true, color: '#c0392b', fontSize: 8, margin: [0, 0, 0, G] });
-
-    content.push({ text: 'Et :', bold: true, fontSize: S, margin: [0, 0, 0, 1] });
+    // ── En-tete compact
     content.push({
-      text: 'RBS 4YOU, SASU au capital social de 1 000,00 EUR,\nSiege social : 60 rue Francois 1er, 75008 Paris,\nImmatriculee au RCS de Paris sous le n SIREN 101 776 276,\nRepresentee par Robin Fraitot, President,',
-      fontSize: S, alignment: 'right', margin: [0, 0, 0, 1],
-    });
-    content.push({ text: "(Ci-apres l'Acquereur)", italics: true, color: '#c0392b', fontSize: 8, alignment: 'right', margin: [0, 0, 0, G + 2] });
-
-    // Section 1
-    content.push({ text: '1. Objet de la vente', bold: true, fontSize: SH, margin: [0, 0, 0, 1] });
-    content.push(rule('#222222'));
-    content.push({ text: "Le Vendeur atteste avoir vendu a l'Acquereur le bien suivant :", fontSize: S, margin: [0, 0, 0, 1] });
-    content.push({
-      ul: [
-        'Description : ' + v('item-desc'),
-        'Montant total paye : ' + fmtAmount(v('item-amount')),
+      columns: [
+        { text: 'RBS 4YOU', bold: true, fontSize: 10, width: 'auto' },
+        { text: "Attestation d'Achat  |  N " + invNum, fontSize: 14, bold: true, alignment: 'center' },
+        { text: '', width: 50 },
       ],
-      fontSize: S, margin: [0, 0, 0, G],
+      margin: [0, 0, 0, 3],
     });
-    content.push({ text: 'Paye par : ' + payLine, fontSize: S, margin: [0, 0, 0, payDetail ? 1 : G + 2] });
+    content.push(rule('#aaaaaa'));
+
+    // ── Parties en 2 colonnes (gain majeur d'espace vertical)
+    content.push({ text: 'Entre les soussignes :', bold: true, fontSize: S, margin: [0, 2, 0, 3] });
+    content.push({
+      columns: [
+        {
+          width: '47%',
+          stack: [
+            { text: 'Le Vendeur (Particulier)', bold: true, fontSize: S },
+            { text: 'Nom : ' + v('seller-name'), fontSize: S },
+            { text: 'Adresse : ' + v('seller-address'), fontSize: S },
+            { text: 'Tel : ' + v('seller-phone'), fontSize: S },
+            { text: '(Ci-apres le Vendeur)', italics: true, color: '#c0392b', fontSize: 7.5, margin: [0, 1, 0, 0] },
+          ],
+        },
+        {
+          width: '53%',
+          alignment: 'right',
+          stack: [
+            { text: 'RBS 4YOU, SASU — capital 1 000,00 EUR\nSiege : 60 rue Francois 1er, 75008 Paris\nRCS Paris — SIREN 101 776 276\nRepresentee par Robin Fraitot, President', fontSize: S, alignment: 'right' },
+            { text: "(Ci-apres l'Acquereur)", italics: true, color: '#c0392b', fontSize: 7.5, alignment: 'right', margin: [0, 1, 0, 0] },
+          ],
+        },
+      ],
+      margin: [0, 0, 0, 4],
+    });
+
+    // ── Section 1
+    content.push(...sec('1. Objet de la vente'));
+    content.push({
+      text: "Le Vendeur atteste avoir vendu a l'Acquereur : " + v('item-desc') + '\nMontant total paye : ' + fmtAmount(v('item-amount')),
+      fontSize: S, margin: [0, 0, 0, 2],
+    });
+    content.push({ text: 'Paye par : ' + payLine, fontSize: S, margin: [0, 0, 0, payDetail ? 1 : 4] });
     if (payDetail) {
-      content.push({ text: 'Coordonnees de paiement : ' + payDetail, fontSize: S, margin: [0, 0, 0, G + 2] });
+      content.push({ text: 'Coordonnees : ' + payDetail, fontSize: S, margin: [0, 0, 0, 4] });
     }
 
-    // Section 2
-    content.push({ text: '2. Transfert de propriete', bold: true, fontSize: SH, margin: [0, 0, 0, 1] });
-    content.push(rule('#222222'));
-    content.push({ text: "La propriete du bien est transferee a l'Acquereur des le paiement.", color: '#2471a3', fontSize: S, margin: [0, 0, 0, 1] });
-    content.push({ text: "Le Vendeur certifie en etre l'unique proprietaire legitime, libre de tout gage ou dette, et garantit leur validite et transferabilite. En cas de non-livraison, d'invalidite ou non-conformite, il s'engage a rembourser integralement l'Acquereur.", color: '#2471a3', fontSize: S, margin: [0, 0, 0, G + 2] });
+    // ── Section 2
+    content.push(...sec('2. Transfert de propriete'));
+    content.push({
+      text: "La propriete du bien est transferee a l'Acquereur des le paiement. Le Vendeur certifie en etre l'unique proprietaire legitime, libre de tout gage ou dette, et garantit leur validite et transferabilite. En cas de non-livraison, d'invalidite ou non-conformite, il s'engage a rembourser integralement l'Acquereur.",
+      color: '#1a5276', fontSize: S, margin: [0, 0, 0, 4],
+    });
 
-    // Section 3
-    content.push({ text: '3. Usage comptable', bold: true, fontSize: SH, margin: [0, 0, 0, 1] });
-    content.push(rule('#222222'));
-    content.push({ text: "Le Vendeur agit en qualite de particulier non assujetti a la TVA, dans le cadre d'une activite non professionnelle et occasionnelle.", color: '#2471a3', fontSize: S, margin: [0, 0, 0, G + 3] });
+    // ── Section 3
+    content.push(...sec('3. Usage comptable'));
+    content.push({
+      text: "Le Vendeur agit en qualite de particulier non assujetti a la TVA, dans le cadre d'une activite non professionnelle et occasionnelle.",
+      color: '#1a5276', fontSize: S, margin: [0, 0, 0, 6],
+    });
 
-    // Conclusion + signature
-    content.push({ text: 'Fait, lu et approuve a ' + v('city') + ', le ' + fmtDate(v('doc-date')) + '.', fontSize: S, margin: [0, 0, 0, G + 2] });
-    content.push({ text: 'Signature du Vendeur :', bold: true, fontSize: S + 1, margin: [0, 0, 0, 4] });
-    content.push({ image: sigDataUrl, width: 90 });
+    // ── Conclusion + signature
+    content.push({ text: 'Fait, lu et approuve a ' + v('city') + ', le ' + fmtDate(v('doc-date')) + '.', fontSize: S, margin: [0, 0, 0, 4] });
+    content.push({ text: 'Signature du Vendeur :', bold: true, fontSize: S, margin: [0, 0, 0, 3] });
+    content.push({ image: sigDataUrl, width: 80 });
 
     return {
       pageSize: 'A4',
-      pageMargins: [35, 28, 35, 28],
+      pageMargins: [28, 22, 28, 22],
       content,
-      defaultStyle: { font: 'Roboto', fontSize: S, lineHeight: 1.25 },
+      defaultStyle: { font: 'Roboto', fontSize: S, lineHeight: 1.2 },
     };
   }
 
