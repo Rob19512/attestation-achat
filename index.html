@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.9/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.9/vfs_fonts.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -35,7 +36,6 @@
 
     .card { width: 100%; max-width: 580px; }
 
-    /* ── Header ── */
     .header {
       background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
       padding: 36px 32px 32px;
@@ -45,26 +45,20 @@
       overflow: hidden;
     }
     .header::before {
-      content: '';
-      position: absolute; top: -40px; right: -40px;
-      width: 200px; height: 200px;
-      background: rgba(255,255,255,.05); border-radius: 50%;
+      content: ''; position: absolute; top: -40px; right: -40px;
+      width: 200px; height: 200px; background: rgba(255,255,255,.05); border-radius: 50%;
     }
     .header::after {
-      content: '';
-      position: absolute; bottom: -60px; left: -20px;
-      width: 160px; height: 160px;
-      background: rgba(255,255,255,.04); border-radius: 50%;
+      content: ''; position: absolute; bottom: -60px; left: -20px;
+      width: 160px; height: 160px; background: rgba(255,255,255,.04); border-radius: 50%;
     }
     .header-inner { position: relative; z-index: 1; }
 
     .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
     .brand-logo {
       width: 52px; height: 52px;
-      background: rgba(255,255,255,.15);
-      border: 1.5px solid rgba(255,255,255,.3);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.3);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 14px; color: #fff; letter-spacing: .5px;
     }
     .brand-name { color: #fff; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
@@ -80,28 +74,21 @@
       padding: 8px 10px; font-size: 11px; color: rgba(255,255,255,.7); font-weight: 500;
     }
     .step-num {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: rgba(255,255,255,.2);
+      width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.2);
       display: flex; align-items: center; justify-content: center;
       font-size: 10px; color: #fff; font-weight: 700; flex-shrink: 0;
     }
 
-    /* ── Form ── */
     .form-body { padding: 0 20px; }
 
     .section {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px 22px 18px;
-      margin-bottom: 16px;
+      background: #fff; border: 1px solid var(--border); border-radius: 16px;
+      padding: 22px 22px 18px; margin-bottom: 16px;
       box-shadow: 0 1px 4px rgba(0,0,0,.04);
     }
-
     .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
     .section-icon {
-      width: 34px; height: 34px; border-radius: 9px;
-      background: #eff6ff;
+      width: 34px; height: 34px; border-radius: 9px; background: #eff6ff;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .section-icon svg { width: 16px; height: 16px; }
@@ -110,7 +97,6 @@
 
     .form-group { margin-bottom: 14px; }
     .form-group:last-child { margin-bottom: 0; }
-
     .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--sub); margin-bottom: 5px; }
 
     .input-wrap { position: relative; }
@@ -119,12 +105,9 @@
       color: var(--muted); display: flex; align-items: center; pointer-events: none;
     }
     .input-wrap .icon svg { width: 15px; height: 15px; }
-    .input-wrap input, .input-wrap select { padding-left: 36px !important; }
+    .input-wrap input { padding-left: 36px !important; }
 
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    select {
+    input[type="text"], input[type="number"], input[type="date"] {
       width: 100%; padding: 10px 13px;
       border: 1.5px solid var(--border); border-radius: 10px;
       font-size: 13.5px; font-family: 'Inter', Arial, sans-serif;
@@ -132,7 +115,7 @@
       transition: border-color .15s, box-shadow .15s, background .15s;
       -webkit-appearance: none; appearance: none;
     }
-    input:focus, select:focus {
+    input:focus {
       outline: none; border-color: var(--sky); background: #fff;
       box-shadow: 0 0 0 3px rgba(59,130,246,.12);
     }
@@ -141,7 +124,6 @@
     .row2 { display: flex; gap: 12px; }
     .row2 > .form-group { flex: 1; }
 
-    /* ── Payment radios ── */
     .pay-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
     .pay-opt { position: relative; }
     .pay-opt input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
@@ -149,24 +131,20 @@
       display: flex; flex-direction: column; align-items: center; gap: 5px;
       padding: 12px 8px; border: 1.5px solid var(--border); border-radius: 10px;
       cursor: pointer; font-size: 11.5px; font-weight: 600; color: var(--sub);
-      background: #f8fafc; transition: border-color .15s, background .15s, color .15s;
-      text-align: center;
+      background: #f8fafc; transition: border-color .15s, background .15s, color .15s; text-align: center;
     }
     .pay-opt label svg { width: 20px; height: 20px; color: var(--muted); transition: color .15s; }
     .pay-opt input:checked + label { border-color: var(--sky); background: #eff6ff; color: var(--blue); }
     .pay-opt input:checked + label svg { color: var(--blue); }
 
-    /* ── Signature ── */
     .sig-wrapper {
-      border: 2px dashed var(--border); border-radius: 12px;
-      background: #f8fafc; position: relative; overflow: hidden;
-      transition: border-color .15s;
+      border: 2px dashed var(--border); border-radius: 12px; background: #f8fafc;
+      position: relative; overflow: hidden; transition: border-color .15s;
     }
     .sig-wrapper:hover { border-color: var(--sky); }
     .sig-wrapper canvas { display: block; width: 100% !important; height: 160px !important; }
     .sig-hint {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       display: flex; flex-direction: column; align-items: center; gap: 6px;
       font-size: 12px; color: var(--muted); pointer-events: none; transition: opacity .2s;
     }
@@ -177,13 +155,11 @@
     .sig-info { font-size: 11px; color: var(--muted); }
     .sig-clear {
       background: none; border: 1px solid var(--border); border-radius: 6px;
-      font-size: 11px; font-family: 'Inter', Arial, sans-serif;
-      color: var(--sub); cursor: pointer; padding: 4px 11px;
-      transition: border-color .15s, color .15s;
+      font-size: 11px; font-family: 'Inter', Arial, sans-serif; color: var(--sub);
+      cursor: pointer; padding: 4px 11px; transition: border-color .15s, color .15s;
     }
     .sig-clear:hover { border-color: #f87171; color: #dc2626; }
 
-    /* ── Submit ── */
     .submit-wrap { padding: 0 20px; margin-top: 8px; }
     .submit-btn {
       width: 100%; padding: 15px;
@@ -200,22 +176,19 @@
     .submit-btn:disabled { opacity: .55; cursor: default; }
     .submit-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-    /* ── Messages ── */
     .msg {
-      margin: 12px 20px 0; padding: 11px 15px;
-      border-radius: 10px; font-size: 13px; display: none; line-height: 1.45;
+      margin: 12px 20px 0; padding: 11px 15px; border-radius: 10px;
+      font-size: 13px; line-height: 1.45; display: none;
     }
-    .msg.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: flex; gap: 8px; align-items: flex-start; }
-    .msg.success { background: #f0fdf4; color: #14532d; border: 1px solid #bbf7d0; display: flex; gap: 8px; align-items: flex-start; }
-    .msg.info    { background: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; display: flex; gap: 8px; align-items: center; }
-    .msg svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+    .msg.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
+    .msg.success { background: #f0fdf4; color: #14532d; border: 1px solid #bbf7d0; display: block; }
+    .msg.info    { background: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; display: block; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
       width: 18px; height: 18px;
-      border: 2.5px solid rgba(255,255,255,.3);
-      border-top-color: #fff; border-radius: 50%;
-      animation: spin .7s linear infinite; flex-shrink: 0;
+      border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0;
     }
   </style>
 </head>
@@ -223,7 +196,6 @@
 
 <div class="card">
 
-  <!-- Header -->
   <div class="header">
     <div class="header-inner">
       <div class="brand">
@@ -246,7 +218,6 @@
 
   <div class="form-body">
 
-    <!-- Vendeur -->
     <div class="section">
       <div class="section-head">
         <div class="section-icon">
@@ -259,7 +230,7 @@
         <label class="field-label">Nom et prénom</label>
         <div class="input-wrap">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-          <input type="text" id="seller-name" placeholder="ex : Lukas Novo">
+          <input type="text" id="seller-name" placeholder="John Doe">
         </div>
       </div>
 
@@ -267,7 +238,7 @@
         <label class="field-label">Adresse complète</label>
         <div class="input-wrap">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-          <input type="text" id="seller-address" placeholder="ex : 12 rue des Lilas, 93190 Livry-Gargan">
+          <input type="text" id="seller-address" placeholder="12 rue de la Paix, 75001 Paris">
         </div>
       </div>
 
@@ -275,12 +246,11 @@
         <label class="field-label">Téléphone</label>
         <div class="input-wrap">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.19h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
-          <input type="text" id="seller-phone" placeholder="ex : 06 12 34 56 78">
+          <input type="text" id="seller-phone" placeholder="06 00 00 00 00">
         </div>
       </div>
     </div>
 
-    <!-- Objet -->
     <div class="section">
       <div class="section-head">
         <div class="section-icon">
@@ -293,7 +263,7 @@
         <label class="field-label">Description du bien vendu</label>
         <div class="input-wrap">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
-          <input type="text" id="item-desc" placeholder="ex : 2 billets concert Jul – Cat. 1">
+          <input type="text" id="item-desc" placeholder="2 billets concert — Cat. 1">
         </div>
       </div>
 
@@ -301,12 +271,11 @@
         <label class="field-label">Montant total (€)</label>
         <div class="input-wrap">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg></span>
-          <input type="number" id="item-amount" placeholder="ex : 400" min="0" step="0.01">
+          <input type="number" id="item-amount" placeholder="400" min="0" step="0.01">
         </div>
       </div>
     </div>
 
-    <!-- Paiement -->
     <div class="section">
       <div class="section-head">
         <div class="section-icon">
@@ -343,12 +312,11 @@
         <label class="field-label" id="pay-detail-label">IBAN</label>
         <div class="input-wrap">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
-          <input type="text" id="pay-detail" placeholder="ex : FR76 2823 3000 0126 5126 2382 1">
+          <input type="text" id="pay-detail" placeholder="FR76 0000 0000 0000 0000 0000 000">
         </div>
       </div>
     </div>
 
-    <!-- Date / Lieu -->
     <div class="section">
       <div class="section-head">
         <div class="section-icon">
@@ -362,7 +330,7 @@
           <label class="field-label">Ville</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-            <input type="text" id="city" placeholder="ex : Paris">
+            <input type="text" id="city" placeholder="Paris">
           </div>
         </div>
         <div class="form-group">
@@ -375,7 +343,6 @@
       </div>
     </div>
 
-    <!-- Signature -->
     <div class="section">
       <div class="section-head">
         <div class="section-icon">
@@ -438,9 +405,9 @@
       const m   = document.querySelector('input[name="pay"]:checked').value;
       const lbl = document.getElementById('pay-detail-label');
       const inp = document.getElementById('pay-detail');
-      if (m === 'virement')    { lbl.textContent = 'IBAN';        inp.placeholder = 'ex : FR76 2823 3000 0126 5126 2382 1'; }
-      else if (m === 'paypal') { lbl.textContent = 'Email PayPal'; inp.placeholder = 'ex : vendeur@email.com'; }
-      else                     { lbl.textContent = 'Préciser';    inp.placeholder = 'ex : Espèces, Chèque…'; }
+      if (m === 'virement')    { lbl.textContent = 'IBAN';         inp.placeholder = 'FR76 0000 0000 0000 0000 0000 000'; }
+      else if (m === 'paypal') { lbl.textContent = 'Email PayPal'; inp.placeholder = 'exemple@email.com'; }
+      else                     { lbl.textContent = 'Préciser';     inp.placeholder = 'Espèces, Chèque…'; }
     });
   });
 
@@ -481,161 +448,96 @@
       ['doc-date',       'Date'],
     ];
     for (const [id, label] of fields) {
-      if (!v(id)) return `Le champ « ${label} » est obligatoire.`;
+      if (!v(id)) return 'Le champ « ' + label + ' » est obligatoire.';
     }
     if (sigPad.isEmpty()) return 'Veuillez apposer votre signature.';
     return null;
   }
 
-  // ── PDF avec jsPDF (texte pur, pas de capture DOM) ────────────────
-  function buildPDF(invNum, sigDataUrl) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-
-    const W  = 210;
-    const mL = 20, mR = 20;
-    const cW = W - mL - mR;
-    let y = 22;
-
-    // Taille → hauteur ligne approx en mm
-    function lh(size) { return size * 0.3528 * 1.45; }
-
-    function txt(str, opts = {}) {
-      const {
-        x      = mL,
-        size   = 11,
-        style  = 'normal',
-        color  = [34, 34, 34],
-        align  = 'left',
-        maxW   = cW,
-      } = opts;
-      doc.setFontSize(size);
-      doc.setFont('helvetica', style);
-      doc.setTextColor(...color);
-      const lines = doc.splitTextToSize(String(str), maxW);
-      const xPos  = align === 'center' ? W / 2 : align === 'right' ? W - mR : x;
-      doc.text(lines, xPos, y, { align });
-      y += lines.length * lh(size);
-    }
-
-    function gap(mm = 3) { y += mm; }
-
-    function hline(color = [180, 180, 180]) {
-      doc.setDrawColor(...color);
-      doc.setLineWidth(0.3);
-      doc.line(mL, y, W - mR, y);
-      y += 4;
-    }
-
-    function section(title) {
-      txt(title, { size: 12, style: 'bold' });
-      doc.setDrawColor(34, 34, 34);
-      doc.setLineWidth(0.4);
-      doc.line(mL, y, W - mR, y);
-      y += 4;
-    }
-
-    // ── En-tête ──────────────────────────────────────────────────
-    txt('RBS 4YOU', { size: 12, style: 'bold' });
-    gap(2);
-    txt("Attestation d'Achat", { size: 21, style: 'bold', align: 'center' });
-    gap(1);
-    txt(`N° ${invNum}`, { size: 10, color: [100, 100, 100], align: 'center' });
-    gap(4);
-    hline();
-
-    // ── Parties ──────────────────────────────────────────────────
-    txt('Entre les soussignés :', { size: 11, style: 'bold' });
-    gap(4);
-
-    txt('Le Vendeur (Particulier)', { size: 11, style: 'bold' });
-    gap(1);
-    txt(`Nom et prénom : ${v('seller-name')}`,    { size: 10.5 });
-    gap(0.5);
-    txt(`Adresse : ${v('seller-address')}`,        { size: 10.5 });
-    gap(0.5);
-    txt(`Téléphone : ${v('seller-phone')}`,        { size: 10.5 });
-    gap(1);
-    txt("(Ci-après « le Vendeur »)", { size: 10, style: 'italic', color: [192, 57, 43] });
-    gap(4);
-
-    txt('Et :', { size: 11, style: 'bold' });
-    gap(2);
-
-    const buyerLines = [
-      'RBS 4YOU, SASU au capital social de 1 000,00 €,',
-      'Siège social : 60 rue François Ier, 75008 Paris,',
-      'Immatriculée au RCS de Paris sous le n° SIREN 101 776 276,',
-      'Représentée par Robin Fraitot, Président,',
-    ];
-    for (const bl of buyerLines) {
-      txt(bl, { size: 10.5, align: 'right', maxW: cW });
-      gap(0.5);
-    }
-    txt("(Ci-après « l'Acquéreur »)", { size: 10, style: 'italic', color: [192, 57, 43], align: 'right' });
-    gap(6);
-
-    // ── Section 1 ────────────────────────────────────────────────
-    section('1. Objet de la vente');
-
-    txt("Le Vendeur atteste avoir vendu à l'Acquéreur le bien suivant :", { size: 10.5 });
-    gap(2);
-    txt(`•  Description : ${v('item-desc')}`,          { size: 10.5, x: mL + 4 });
-    gap(1);
-    txt(`•  Montant total payé : ${fmtAmount(v('item-amount'))}`, { size: 10.5, x: mL + 4 });
-    gap(3);
-
+  // ── Génération PDF avec PDFMake ───────────────────────────────────
+  function buildDocDef(invNum, sigDataUrl) {
     const payMethod = document.querySelector('input[name="pay"]:checked').value;
     const payDetail = v('pay-detail');
-    const on  = '[X]', off = '[ ]';
-    txt(
-      `Payé par : ${payMethod === 'virement' ? on : off} Virement bancaire   ` +
-      `${payMethod === 'paypal'   ? on : off} PayPal   ` +
-      `${payMethod === 'autre'    ? on : off} Autre`,
-      { size: 10.5 }
-    );
+    const on  = '[X]';
+    const off = '[ ]';
+
+    const payLine =
+      (payMethod === 'virement' ? on : off) + ' Virement bancaire   ' +
+      (payMethod === 'paypal'   ? on : off) + ' PayPal   ' +
+      (payMethod === 'autre'    ? on : off) + ' Autre';
+
+    const content = [];
+
+    // En-tête
+    content.push({ text: 'RBS 4YOU', bold: true, fontSize: 12, margin: [0, 0, 0, 6] });
+    content.push({ text: "Attestation d'Achat", fontSize: 20, bold: true, alignment: 'center', margin: [0, 0, 0, 4] });
+    content.push({ text: 'N° ' + invNum, fontSize: 10, color: '#666666', alignment: 'center', margin: [0, 0, 0, 14] });
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: '#bbbbbb' }], margin: [0, 0, 0, 12] });
+
+    // Parties
+    content.push({ text: 'Entre les soussignés :', bold: true, margin: [0, 0, 0, 8] });
+
+    content.push({ text: 'Le Vendeur (Particulier)', bold: true, fontSize: 10.5, margin: [0, 0, 0, 4] });
+    content.push({ text: 'Nom et prénom : ' + v('seller-name'),    fontSize: 10.5, margin: [0, 0, 0, 2] });
+    content.push({ text: 'Adresse : ' + v('seller-address'),             fontSize: 10.5, margin: [0, 0, 0, 2] });
+    content.push({ text: 'Téléphone : ' + v('seller-phone'),  fontSize: 10.5, margin: [0, 0, 0, 4] });
+    content.push({ text: '(Ci-après « le Vendeur »)', italics: true, color: '#c0392b', fontSize: 10, margin: [0, 0, 0, 12] });
+
+    content.push({ text: 'Et :', bold: true, margin: [0, 0, 0, 6] });
+    content.push({
+      text: [
+        'RBS 4YOU, SASU au capital social de 1 000,00 €,\n',
+        'Siège social : 60 rue François Ier, 75008 Paris,\n',
+        'Immatriculée au RCS de Paris sous le n° SIREN 101 776 276,\n',
+        'Représentée par Robin Fraitot, Président,\n',
+      ],
+      fontSize: 10.5, alignment: 'right', margin: [0, 0, 0, 2],
+    });
+    content.push({ text: "(Ci-après « l'Acquéreur »)", italics: true, color: '#c0392b', fontSize: 10, alignment: 'right', margin: [0, 0, 0, 18] });
+
+    // Section 1
+    content.push({ text: '1. Objet de la vente', bold: true, fontSize: 12, margin: [0, 0, 0, 3] });
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: '#222222' }], margin: [0, 0, 0, 8] });
+    content.push({ text: "Le Vendeur atteste avoir vendu à l'Acquéreur le bien suivant :", fontSize: 10.5, margin: [0, 0, 0, 6] });
+    content.push({
+      ul: [
+        'Description : ' + v('item-desc'),
+        'Montant total payé : ' + fmtAmount(v('item-amount')),
+      ],
+      fontSize: 10.5, margin: [0, 0, 0, 8],
+    });
+    content.push({ text: 'Payé par : ' + payLine, fontSize: 10.5, margin: [0, 0, 0, payDetail ? 4 : 18] });
     if (payDetail) {
-      gap(1.5);
-      txt(`Coordonnées de paiement : ${payDetail}`, { size: 10.5 });
+      content.push({ text: 'Coordonnées de paiement : ' + payDetail, fontSize: 10.5, margin: [0, 0, 0, 18] });
     }
-    gap(6);
 
-    // ── Section 2 ────────────────────────────────────────────────
-    section('2. Transfert de propriété');
+    // Section 2
+    content.push({ text: '2. Transfert de propriété', bold: true, fontSize: 12, margin: [0, 0, 0, 3] });
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: '#222222' }], margin: [0, 0, 0, 8] });
+    content.push({ text: "La propriété du bien est transférée à l'Acquéreur dès le paiement.", color: '#2471a3', fontSize: 10.5, margin: [0, 0, 0, 5] });
+    content.push({ text: "Le Vendeur certifie en être l'unique propriétaire légitime, libre de tout gage ou dette, et garantit leur validité et transférabilité. En cas de non-livraison, d'invalidité ou non-conformité, il s'engage à rembourser intégralement l'Acquéreur.", color: '#2471a3', fontSize: 10.5, margin: [0, 0, 0, 18] });
 
-    txt("La propriété du bien est transférée à l'Acquéreur dès le paiement.", { size: 10.5, color: [36, 113, 163] });
-    gap(2);
-    txt(
-      "Le Vendeur certifie en être l'unique propriétaire légitime, libre de tout gage ou dette, " +
-      "et garantit leur validité et transférabilité. En cas de non-livraison, d'invalidité ou " +
-      "non-conformité, il s'engage à rembourser intégralement l'Acquéreur.",
-      { size: 10.5, color: [36, 113, 163] }
-    );
-    gap(6);
+    // Section 3
+    content.push({ text: '3. Usage comptable', bold: true, fontSize: 12, margin: [0, 0, 0, 3] });
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: '#222222' }], margin: [0, 0, 0, 8] });
+    content.push({ text: "Le Vendeur agit en qualité de particulier non assujetti à la TVA, dans le cadre d'une activité non professionnelle et occasionnelle.", color: '#2471a3', fontSize: 10.5, margin: [0, 0, 0, 24] });
 
-    // ── Section 3 ────────────────────────────────────────────────
-    section('3. Usage comptable');
+    // Conclusion + signature
+    content.push({ text: 'Fait, lu et approuvé à ' + v('city') + ', le ' + fmtDate(v('doc-date')) + '.', fontSize: 10.5, margin: [0, 0, 0, 12] });
+    content.push({ text: 'Signature du Vendeur :', bold: true, fontSize: 11, margin: [0, 0, 0, 8] });
+    content.push({ image: sigDataUrl, width: 110, margin: [0, 0, 0, 0] });
 
-    txt(
-      "Le Vendeur agit en qualité de particulier non assujetti à la TVA, " +
-      "dans le cadre d'une activité non professionnelle et occasionnelle.",
-      { size: 10.5, color: [36, 113, 163] }
-    );
-    gap(10);
-
-    // ── Conclusion ────────────────────────────────────────────────
-    txt(`Fait, lu et approuvé à ${v('city')}, le ${fmtDate(v('doc-date'))}.`, { size: 10.5 });
-    gap(5);
-    txt('Signature du Vendeur :', { size: 11, style: 'bold' });
-    gap(3);
-
-    // Signature image
-    doc.addImage(sigDataUrl, 'PNG', mL, y, 65, 28);
-
-    return doc;
+    return {
+      pageSize: 'A4',
+      pageMargins: [40, 40, 40, 60],
+      content,
+      defaultStyle: { font: 'Roboto', fontSize: 11, lineHeight: 1.4 },
+    };
   }
 
   // ── Submit ────────────────────────────────────────────────────────
+  const ICON_DL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+
   document.getElementById('submit-btn').addEventListener('click', async () => {
     clearMsg();
     const err = validate();
@@ -653,13 +555,13 @@
     let invNum;
     try {
       const res = await fetch('/api/counter', { method: 'POST' });
-      if (!res.ok) throw new Error(`Erreur serveur ${res.status}`);
+      if (!res.ok) throw new Error('Erreur serveur ' + res.status);
       const data = await res.json();
       invNum = data.invoiceId;
     } catch (e) {
-      setMsg("Impossible de générer le numéro d'attestation : " + e.message, 'error');
+      setMsg("Impossible de générer le numéro : " + e.message, 'error');
       btn.disabled = false;
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Générer mon attestation PDF`;
+      btn.innerHTML = ICON_DL + ' Générer mon attestation PDF';
       return;
     }
 
@@ -667,16 +569,16 @@
 
     try {
       const sigDataUrl = sigPad.toDataURL('image/png');
-      const doc = buildPDF(invNum, sigDataUrl);
-      const filename = `Attestation-${invNum}-${v('seller-name').replace(/\s+/g, '_')}.pdf`;
-      doc.save(filename);
-      setMsg(`Attestation n° ${invNum} générée et téléchargée avec succès.`, 'success');
+      const docDef     = buildDocDef(invNum, sigDataUrl);
+      const filename   = 'Attestation-' + invNum + '-' + v('seller-name').replace(/\s+/g, '_') + '.pdf';
+      pdfMake.createPdf(docDef).download(filename);
+      setMsg('Attestation n° ' + invNum + ' générée et téléchargée avec succès.', 'success');
     } catch (e) {
-      setMsg('Erreur lors de la création du PDF : ' + e.message, 'error');
+      setMsg('Erreur PDF : ' + e.message, 'error');
     }
 
     btn.disabled = false;
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Générer mon attestation PDF`;
+    btn.innerHTML = ICON_DL + ' Générer mon attestation PDF';
   });
 </script>
 </body>
